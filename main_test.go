@@ -1,23 +1,42 @@
 package main
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func TestPubKey(t *testing.T) {
-
 	input := "elbow inmate boy drill divide device noble ecology fog runway potato guilt"
-
-	expectedPublicKey := "0xc49fb5cf14b357f993ba5fa76be3dd438177d5d3" // Replace with actual expected public key
-	//expectedPrivateKey := "39a0ea5dd4f3941b87ddbcd84207e57a1c9d19d8cfef84865b2260d566c9962a"
+	expectedAddress := "0xC49fb5CF14b357f993bA5FA76BE3Dd438177d5d3" // Replace with actual expected checksummed address
 
 	output := PubKey(input)
 	address := crypto.PubkeyToAddress(output)
 
-	if !bytes.Contains([]byte(address.Hex()), []byte(expectedPublicKey)) {
-		t.Errorf("expected %s to be in output, got %s", expectedPublicKey, address.Hex())
+	// Convert the address to checksummed format
+	checksummedAddress := address.Hex()
+
+	if checksummedAddress != expectedAddress {
+		t.Errorf("expected %s, got %s", expectedAddress, checksummedAddress)
 	}
 }
+
+//Understanding EIP-55 Checksum Encoding
+/*
+A checksum is a small-sized datum derived from a block of digital data for the purpose of detecting errors that may have been introduced during its transmission or storage. In the context of Ethereum addresses, the checksum helps ensure that the address is correctly copied and pasted.
+
+How EIP-55 Works
+Lowercase Address : Start with the lowercase hexadecimal representation of the address.
+Keccak-256 Hash : Compute the Keccak-256 hash of the lowercase address.
+Checksum Calculation : For each character in the original address:
+If the corresponding character in the hash is a 8 or higher, convert the character in the address to uppercase.
+Otherwise, keep the character in the address as lowercase.
+Example
+Given the address c49fb5cf14b357f993ba5fa76be3dd438177d5d3:
+
+Compute the Keccak-256 hash of the lowercase address: 9b2055d370f73ec7d8a03e965129118dc8f5bf83e550736d74d5bf1f52930bd9.
+Compare each character of the address with the corresponding character in the hash:
+If the hash character is 8 or higher, convert the address character to uppercase.
+Otherwise, keep the address character lowercase.
+This results in the checksummed address: C49fb5CF14b357f993bA5FA76BE3Dd438177d5d3.
+*/
