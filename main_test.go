@@ -7,17 +7,33 @@ import (
 )
 
 func TestPubKey(t *testing.T) {
-	input := "elbow inmate boy drill divide device noble ecology fog runway potato guilt"
-	expectedAddress := "0xC49fb5CF14b357f993bA5FA76BE3Dd438177d5d3" // Replace with actual expected checksummed address
+	tests := []struct {
+		input           string
+		index           uint32
+		expectedAddress string
+	}{
+		{
+			input:           "elbow inmate boy drill divide device noble ecology fog runway potato guilt",
+			index:           0,
+			expectedAddress: "0xC49fb5CF14b357f993bA5FA76BE3Dd438177d5d3", // Replace with actual expected checksummed address
+		},
+		{
+			input:           "elbow inmate boy drill divide device noble ecology fog runway potato guilt",
+			index:           1,
+			expectedAddress: "0xD1c12fA87B0BFdB481aC7aF52fe056BB4f5A7eA6", // Replace with actual expected checksummed address
+		},
+	}
 
-	output := PubKey(input)
-	address := crypto.PubkeyToAddress(output)
+	for _, tt := range tests {
+		output := PubKey(tt.input, tt.index)
+		address := crypto.PubkeyToAddress(output)
 
-	// Convert the address to checksummed format
-	checksummedAddress := address.Hex()
+		// Convert the address to checksummed format
+		checksummedAddress := address.Hex()
 
-	if checksummedAddress != expectedAddress {
-		t.Errorf("expected %s, got %s", expectedAddress, checksummedAddress)
+		if checksummedAddress != tt.expectedAddress {
+			t.Errorf("for index %d, expected %s, got %s", tt.index, tt.expectedAddress, checksummedAddress)
+		}
 	}
 }
 

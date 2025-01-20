@@ -12,14 +12,14 @@ import (
 	"github.com/tyler-smith/go-bip39"
 )
 
-func PubKey(mnemonic string) ecdsa.PublicKey {
+func PubKey(mnemonic string, addressIndex uint32) ecdsa.PublicKey {
 	seed := bip39.NewSeed(mnemonic, "")
 	masterKey, err := bip32.NewMasterKey(seed)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Derive the path m/44'/60'/0'/0/0
+	// Derive the path m/44'/60'/0'/0/addressIndex
 	//BIP 44 defines a hierarchical deterministic (HD) wallet path structure for generating multiple addresses from a single seed. The path is a sequence of indices that specify the hierarchy levels. Each level in the path is represented by a 32-bit unsigned integer.
 	// Hardened Keys (Prime Notation, e.g., 44') :
 	// These keys are derived using a different method that involves the private key.
@@ -32,7 +32,7 @@ func PubKey(mnemonic string) ecdsa.PublicKey {
 		bip32.FirstHardenedChild + 60, // 60' Use the Ethereum coin type.
 		bip32.FirstHardenedChild + 0,  // 0' Use the default account.
 		0,                             // 0 Use external addresses.
-		0,                             // 0 Use the first address.
+		addressIndex,                  // Use the specified address index.
 	}
 
 	var childKey *bip32.Key = masterKey
@@ -57,7 +57,7 @@ func main() {
 	mnemonic, _ := reader.ReadString('\n')
 	mnemonic = mnemonic[:len(mnemonic)-1] // Remove newline character
 
-	pubKey := PubKey(mnemonic)
+	pubKey := PubKey(mnemonic, 0)
 	address := crypto.PubkeyToAddress(pubKey)
 	fmt.Printf("Ethereum Address: %s\n", address.Hex())
 }
