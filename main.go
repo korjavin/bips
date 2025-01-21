@@ -51,6 +51,32 @@ func PubKey(mnemonic string, addressIndex uint32) ecdsa.PublicKey {
 	return privKey.PublicKey
 }
 
+func PrivKeyHex(mnemonic string, addressIndex uint32) string {
+	seed := bip39.NewSeed(mnemonic, "")
+	masterKey, err := bip32.NewMasterKey(seed)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	path := []uint32{
+		bip32.FirstHardenedChild + 44,
+		bip32.FirstHardenedChild + 60,
+		bip32.FirstHardenedChild + 0,
+		0,
+		addressIndex,
+	}
+
+	var childKey *bip32.Key = masterKey
+	for _, index := range path {
+		childKey, err = childKey.NewChildKey(index)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return fmt.Sprintf("%x", childKey.Key)
+}
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter mnemonic: ")

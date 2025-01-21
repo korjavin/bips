@@ -14,11 +14,11 @@ func TestPubKey(t *testing.T) {
 	}{
 		{
 			index:           0,
-			expectedAddress: "0xC49fb5CF14b357f993bA5FA76BE3Dd438177d5d3", // Replace with actual expected checksummed address
+			expectedAddress: "0xC49fb5CF14b357f993bA5FA76BE3Dd438177d5d3",
 		},
 		{
 			index:           1,
-			expectedAddress: "0xD1c12fA87B0BFdB481aC7aF52fe056BB4f5A7eA6", // Replace with actual expected checksummed address
+			expectedAddress: "0xD1c12fA87B0BFdB481aC7aF52fe056BB4f5A7eA6",
 		},
 	}
 
@@ -31,6 +31,31 @@ func TestPubKey(t *testing.T) {
 
 		if checksummedAddress != tt.expectedAddress {
 			t.Errorf("for index %d, expected %s, got %s", tt.index, tt.expectedAddress, checksummedAddress)
+		}
+	}
+}
+
+func TestPrivKeyHex(t *testing.T) {
+	seedPhrase := "elbow inmate boy drill divide device noble ecology fog runway potato guilt"
+	tests := []struct {
+		index           uint32
+		expectedPrivKey string
+	}{
+		{
+			index:           0,
+			expectedPrivKey: "39a0ea5dd4f3941b87ddbcd84207e57a1c9d19d8cfef84865b2260d566c9962a",
+		},
+		{
+			index:           1,
+			expectedPrivKey: "282e6f994d81975305c845939a95fd75a845ce0a07816d7ad5ab6aa18e404f7b",
+		},
+	}
+
+	for _, tt := range tests {
+		output := PrivKeyHex(seedPhrase, tt.index)
+
+		if output != tt.expectedPrivKey {
+			t.Errorf("for index %d, expected %s, got %s", tt.index, tt.expectedPrivKey, output)
 		}
 	}
 }
